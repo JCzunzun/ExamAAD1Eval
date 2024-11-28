@@ -3,7 +3,9 @@ package edu.iesam.examaad1eval
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import androidx.room.Room
 import edu.iesam.examaad1eval.features.ex2.data.Ex2DataRepository
+import edu.iesam.examaad1eval.features.ex2.data.local.db.Ex2DataBase
 import edu.iesam.examaad1eval.features.ex2.data.local.db.Ex2DbLocalDataSource
 import edu.iesam.examaad1eval.features.ex2.data.remote.MockEx2RemoteDataSource
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -24,10 +26,13 @@ class MainActivity : AppCompatActivity() {
 
     @OptIn(DelicateCoroutinesApi::class)
     private fun executeExercise2(){
-        val localDataSource = Ex2DbLocalDataSource()
-        val remoteDataSource = MockEx2RemoteDataSource()
-        val ex2DataRepository = Ex2DataRepository(localDataSource, remoteDataSource)
+        var midb: Ex2DataBase
         GlobalScope.launch {
+            midb = Room.databaseBuilder(this@MainActivity, Ex2DataBase::class.java, "ex2").build()
+            val ex2Dao = midb.ex2Dao()
+            val localDataSource = Ex2DbLocalDataSource(ex2Dao)
+            val remoteDataSource = MockEx2RemoteDataSource()
+            val ex2DataRepository = Ex2DataRepository(localDataSource, remoteDataSource)
             val games = ex2DataRepository.getGames()
             games.forEach {
                 Log.d("@dev", "Game: ${it}")

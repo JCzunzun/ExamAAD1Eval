@@ -12,5 +12,5 @@ const val ID = "id"
 data class GameEntity(
     @PrimaryKey @ColumnInfo(name = ID) val id: String,
     @ColumnInfo(name = "title") val title: String,
-    @Embedded val player: String
+    @ColumnInfo(name = "players") val player: List<Player>
 )

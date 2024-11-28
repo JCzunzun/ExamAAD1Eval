@@ -15,7 +15,7 @@ class Ex2DataRepository(
         val localGames = localDataSource.getAllUsers()
         if(localGames.isEmpty()){
             val remoteGames = remoteDataSource.getGames()
-            remoteGames.forEach { localDataSource.save(it) }
+            localDataSource.saveAll(remoteGames)
             return remoteGames
         }
         return localGames
