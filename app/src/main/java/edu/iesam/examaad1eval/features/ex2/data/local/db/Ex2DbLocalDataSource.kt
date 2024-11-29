@@ -1,5 +1,6 @@
 package edu.iesam.examaad1eval.features.ex2.data.local.db
 
+import edu.iesam.examaad1eval.app.domain.ErrorApp
 import edu.iesam.examaad1eval.features.ex2.domain.Game
 
 class Ex2DbLocalDataSource(
@@ -12,9 +13,19 @@ class Ex2DbLocalDataSource(
         }
         ex2Dao.saveAll(*gamesList.toTypedArray())
     }
-    suspend fun getAllUsers(): List<Game> {
-        return ex2Dao.getAllUsers().map {
-            it.toDomain()
+    suspend fun getAllUsers(): Result<List<Game>> {
+        return try {
+            val gamesList = ex2Dao.getAllUsers().map {
+                it.toDomain()
+            }
+            if(gamesList.isNotEmpty()){
+                Result.success(gamesList)
+            }else{
+                Result.failure(ErrorApp.DataErrorApp)
+            }
+        }catch (e:Exception){
+            Result.failure(ErrorApp.DataErrorApp)
         }
+
     }
 }

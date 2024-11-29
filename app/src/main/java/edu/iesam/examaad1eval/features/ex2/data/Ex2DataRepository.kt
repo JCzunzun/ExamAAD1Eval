@@ -11,13 +11,18 @@ class Ex2DataRepository(
     private val remoteDataSource: MockEx2RemoteDataSource
 ):Ex2Repository {
 
-    override suspend fun getGames(): List<Game> {
+    override suspend fun getGames(): Result<List<Game>> {
+        val list = mutableListOf<Game>()
         val localGames = localDataSource.getAllUsers()
-        if(localGames.isEmpty()){
-            val remoteGames = remoteDataSource.getGames()
-            localDataSource.saveAll(remoteGames)
-            return remoteGames
+        val remoteGames = remoteDataSource.getGames()
+        localGames.onFailure {
+                val saveList=remoteGames.slice(0..4)
+                localDataSource.saveAll(saveList)
+            list.addAll(remoteGames)
+        }.onSuccess {
+            list.addAll(it)
+            list.addAll(remoteGames.filter { it !in list })
         }
-        return localGames
+        return Result.success(list.distinctBy { it.id })
     }
 }

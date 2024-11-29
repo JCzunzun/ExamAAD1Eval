@@ -1,4 +1,4 @@
-package edu.iesam.examaad1eval.features.ex2.data.local.db.converters
+package edu.iesam.examaad1eval.app.data.local.db.converters
 
 import androidx.room.TypeConverter
 import com.google.gson.Gson
@@ -10,10 +10,10 @@ class Converters {
     
     @TypeConverter
     fun to(players:String): List<Player> {
-        val listPlayerType = object : TypeToken<List<Player>>() {}.type
-        return gson.fromJson(players, listPlayerType)}
+        return gson.fromJson(players, Array<Player>::class.java).toList()
+    }
     @TypeConverter
     fun from(players: List<Player>): String {
-        return gson.toJson(players, object : TypeToken<List<Player>>() {}.type)
+        return gson.toJson(players)
     }
 }
