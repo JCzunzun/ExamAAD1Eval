@@ -13,7 +13,7 @@ class Ex2DbLocalDataSource(
         }
         ex2Dao.saveAll(*gamesList.toTypedArray())
     }
-    suspend fun getAllUsers(): Result<List<Game>> {
+    suspend fun getAllGames(): Result<List<Game>> {
         return try {
             val gamesList = ex2Dao.getAllUsers().map {
                 it.toDomain()
