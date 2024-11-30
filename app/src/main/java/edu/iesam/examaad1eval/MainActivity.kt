@@ -24,16 +24,22 @@ class MainActivity : AppCompatActivity() {
         val remoteDataSource = MockEx1RemoteDataSource()
         val repository = Ex1DataRepository(localDataSource, remoteDataSource)
         val users = repository.getUsers()
-        for (user in users) {
-            Log.d("@dev", "user: $user")
+        users.onSuccess {
+            it.forEach { user ->
+                Log.d("@dev", "user: $user")
+            }
         }
         val items = repository.getItems()
-        for (item in items) {
-            Log.d("@dev", "item: $item")
+        items.onSuccess {
+            it.forEach { item ->
+                Log.d("@dev", "item: $item")
+            }
         }
         val services = repository.getServices()
-        for (service in services) {
-            Log.d("@dev", "service: $service")
+        services.onSuccess {
+            it.forEach { service ->
+                Log.d("@dev", "service: $service")
+            }
         }
 
     }

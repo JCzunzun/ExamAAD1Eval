@@ -11,32 +11,48 @@ class Ex1DataRepository(
     private val localDataSource: Ex1XmlLocalDataSource,
     private val remoteDataSource: MockEx1RemoteDataSource
 ): Ex1Repository {
-    override fun getUsers(): List<User> {
+    override fun getUsers(): Result<List<User>> {
         val users = localDataSource.getUsers()
-        if (users.isEmpty()) {
-            val remoteUsers = remoteDataSource.getUsers()
-            localDataSource.saveUsers(remoteUsers)
-            return remoteUsers
+        val remoteUsers = remoteDataSource.getUsers()
+        users.onFailure {
+            if (remoteUsers.isNotEmpty()){
+                localDataSource.saveUsers(remoteUsers)
+                return Result.success(remoteUsers)
+            }
+            else{
+                return Result.failure(it)
+            }
         }
         return users
+
     }
 
-    override fun getItems(): List<Item> {
+    override fun getItems(): Result<List<Item>> {
         val items = localDataSource.getItems()
-        if (items.isEmpty()) {
-            val remoteItems = remoteDataSource.getItems()
-            localDataSource.saveItems(remoteItems)
-            return remoteItems
+        val remoteItems = remoteDataSource.getItems()
+        items.onFailure {
+            if (remoteItems.isNotEmpty()){
+                localDataSource.saveItems(remoteItems)
+                return Result.success(remoteItems)
+            }
+            else{
+                return Result.failure(it)
+            }
         }
         return items
     }
 
-    override fun getServices(): List<Services> {
+    override fun getServices(): Result<List<Services>> {
         val services = localDataSource.getServices()
-        if (services.isEmpty()) {
-            val remoteServices = remoteDataSource.getServices()
-            localDataSource.saveServices(remoteServices)
-            return remoteServices
+        val remoteServices = remoteDataSource.getServices()
+        services.onFailure {
+            if (remoteServices.isNotEmpty()){
+                localDataSource.saveServices(remoteServices)
+                return Result.success(remoteServices)
+            }
+            else{
+                return Result.failure(it)
+            }
         }
         return services
     }

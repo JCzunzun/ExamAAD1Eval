@@ -3,6 +3,7 @@ package edu.iesam.examaad1eval.features.ex1.data.local
 import android.app.Service
 import android.content.Context
 import com.google.gson.Gson
+import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
 import edu.iesam.examaad1eval.features.ex1.domain.Item
 import edu.iesam.examaad1eval.features.ex1.domain.Services
@@ -27,30 +28,50 @@ class Ex1XmlLocalDataSource(context: Context) {
         val usersJson = gson.toJson(users)
         editor.putString("users", usersJson).apply()
     }
-    fun getItems(): List<Item> {
-        val itemsJson = sharedPreferences.getString("items", null)
-        return if (itemsJson != null) {
-            gson.fromJson(itemsJson, object : TypeToken<List<Item>>() {}.type)
-        } else {
-            emptyList()
+    fun getItems(): Result<List<Item>> {
+        try {
+            val itemsJson = sharedPreferences.getString("items", null)
+            if (itemsJson != null) {
+                val items = gson.fromJson(itemsJson, Array<Item>::class.java).toList()
+                return Result.success(items)
+            } else {
+                return Result.failure(Exception("No items found"))
+            }
         }
+        catch (e: Exception){
+            return Result.failure(e)
+        }
+
     }
 
-    fun getServices(): List<Services> {
-        val servicesJson = sharedPreferences.getString("services", null)
-        return if (servicesJson != null) {
-            gson.fromJson(servicesJson, object : TypeToken<List<Service>>() {}.type)
-        } else {
-            emptyList()
+    fun getServices(): Result<List<Services>> {
+        try {
+            val servicesJson = sharedPreferences.getString("services", null)
+            if (servicesJson != null) {
+                val services = gson.fromJson(servicesJson, Array<Services>::class.java).toList()
+                return Result.success(services)
+            } else {
+                return Result.failure(Exception("No services found"))
+            }
         }
+        catch (e: Exception){
+            return Result.failure(e)
+        }
+
     }
 
-    fun getUsers(): List<User> {
-        val usersJson = sharedPreferences.getString("users", null)
-        return if (usersJson != null) {
-            gson.fromJson(usersJson, object : TypeToken<List<User>>() {}.type)
-        } else {
-            emptyList()
+    fun getUsers(): Result<List<User>> {
+        try {
+            val usersJson = sharedPreferences.getString("users", null)
+            if (usersJson != null) {
+                val users = gson.fromJson(usersJson, Array<User>::class.java).toList()
+                return Result.success(users)
+            } else {
+                return Result.failure(Exception("No users found"))
+            }
+        }catch (e: Exception){
+            return Result.failure(e)
         }
+
     }
 }
